@@ -11,8 +11,8 @@
 #include <libnetfilter_queue/libnetfilter_queue.h>
 
 using namespace std;
-static bool cheak=false;
-static char* target;
+static bool check=false;
+static string target;
 static int target_size;
 
 void usage() {
@@ -40,11 +40,7 @@ bool find_site(unsigned char *data){
         size_t host_find = s.find("Host");
         if(host_find!=string::npos){
             string url = s.substr(host_find+6,target_size);
-            for(int i=0;i<target_size;i++){
-                if(target[i]!=url[i]){
-                    return false;
-                }
-            }
+            if(target!=url) return false;
         }
         return true;
     }
@@ -100,7 +96,7 @@ static u_int32_t print_pkt (struct nfq_data *tb)
     ret = nfq_get_payload(tb, &data);
     if (ret >= 0) {
         //printf("payload_len=%d ", ret);
-        cheak= find_site(data);
+        check= find_site(data);
     }
     //fputc('\n', stdout);
 
@@ -114,7 +110,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
     u_int32_t id = print_pkt(nfa);
     //printf("entering callback\n");
 
-    if(cheak==true) {
+    if(check==true) {
         printf("blocked\n");
         return nfq_set_verdict(qh, id, NF_DROP, 0, NULL);
     }
@@ -130,7 +126,7 @@ int main(int argc, char **argv)
         return -1;
     }
     target=argv[1];
-    target_size=strlen(target);
+    target_size=target.length();
     struct nfq_handle *h;
     struct nfq_q_handle *qh;
     struct nfnl_handle *nh;
