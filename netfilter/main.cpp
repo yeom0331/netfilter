@@ -41,13 +41,12 @@ bool find_site(unsigned char *data){
         if(host_find!=string::npos){
             string url = s.substr(host_find+6,target_size);
             for(int i=0;i<target_size;i++){
-                if(target[i]==url[i]){
-                    return true;
+                if(target[i]!=url[i]){
+                    return false;
                 }
-                return false;
             }
         }
-        return false;
+        return true;
     }
     return false;
 }
